@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Table V05</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->
+	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/2/bootstrap/css/bootstrap.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.1/css/font-awesome.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/2/animate/animate.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/2/select2/select2.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/2/perfect-scrollbar/perfect-scrollbar.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="css/2/util.css">
+	<link rel="stylesheet" type="text/css" href="css/2/main.css">
+<!--===============================================================================================-->
+</head>
+<body>
+
+	<div class="limiter">
+		<div class="container-table100">
+			<div class="wrap-table100">
+				<div class="table100 ver1">
+					<div class="table100-firstcol">
+						<table>
+							<thead>
+								<tr class="row100 head">
+									<th class="cell100 column1">Employees</th>
+								</tr>
+							</thead>
+							<tbody id="list2">
+								<tr class="row100 body" v-for="zoznam in nieco2">
+									<td class="cell100 column1">{{zoznam.zamestnanci}}
+									<button style="margin-left:+20%;" type="button" class="btn-warning" v-bind:value="zoznam.id" onclick="uprav(this);">Uprav</button>
+									<button type="button" class="btn-danger"  v-bind:value="zoznam.id" onclick="vymaz(this);">Vymaž</button>
+									</td>
+
+								</tr>
+
+
+							</tbody>
+						</table>
+					</div>
+
+					<div class="wrap-table100-nextcols js-pscroll">
+						<div class="table100-nextcols">
+							<table>
+								<thead>
+									<tr class="row100 head">
+										<th class="cell100 column2">Position</th>
+										<th class="cell100 column3">Start date</th>
+										<th class="cell100 column4">Last Activity</th>
+										<th class="cell100 column5">Contacts</th>
+										<th class="cell100 column6">Age</th>
+										<th class="cell100 column7">Address</th>
+										<th class="cell100 column8">Card No</th>
+									</tr>
+								</thead>
+								<tbody id="list1" >
+
+									<tr class="row100 body" v-for="sale in nieco" >
+										<td class="cell100 column2">{{ sale.pozicia }}</td>
+										<td class="cell100 column3">{{ sale.zaciatok }}</td>
+										<td class="cell100 column4">{{ sale.posledny }}</td>
+										<td class="cell100 column5">{{ sale.email }}</td>
+										<td class="cell100 column6">{{ sale.vek }}</td>
+										<td class="cell100 column7">{{ sale.adresa }}</td>
+										<td class="cell100 column8">{{ sale.karta }}</td>
+									</tr>
+
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<button type="button" class="btn btn-primary" onclick="vytvor();">Vytvor zaznam</button>
+			</div>
+		</div>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/2/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/2/bootstrap/js/popper.js"></script>
+	<script src="vendor/2/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/2/select2/select2.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/2/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+	<script>
+		$('.js-pscroll').each(function(){
+			var ps = new PerfectScrollbar(this);
+
+			$(window).on('resize', function(){
+				ps.update();
+			})
+
+			$(this).on('ps-x-reach-start', function(){
+				$(this).parent().find('.table100-firstcol').removeClass('shadow-table100-firstcol');
+			});
+
+			$(this).on('ps-scroll-x', function(){
+				$(this).parent().find('.table100-firstcol').addClass('shadow-table100-firstcol');
+			});
+
+		});
+
+		$.ajax({
+			url:"http://192.168.99.100:3500/data",
+			type:'GET',
+			contentType: "application/json",
+			success: function(data){
+				app.nieco = data;
+				app2.nieco2 = data;
+			}
+        });
+
+		var app = new Vue({
+			el:"#list1",
+			data: {
+				nieco: []
+
+			}
+		});
+
+		var app2 = new Vue({
+			el:"#list2",
+			data: {
+				nieco2: []
+
+			}
+		});
+
+		function uprav(event){
+			window.location.replace("/uprava.html?id="+event.value);
+		}
+
+		function vymaz(event){
+			alert("Skutočne si prajete odstraniť tento záznam???");
+			$.ajax({
+							url:"http://192.168.99.100:3500/data/"+event.value,
+							type:'DELETE',
+							contentType: "application/json",
+							success: function(data) {
+								console.log(data);
+								window.location.reload();
+							}
+					});
+
+		}
+
+		function vytvor() {
+			window.location.replace("/vytvorenie.html");
+		}
+
+	</script>
+<!--===============================================================================================-->
+	<script src="js/main.js"></script>
+
+</body>
+</html>
